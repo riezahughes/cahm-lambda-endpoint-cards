@@ -3,14 +3,16 @@ version: 0.2
 phases:
   build:
     commands:
-      - echo "Changing into source directory $CODEBUILD_SRC_DIR"
-      - cd $CODEBUILD_SRC_DIR
       - echo "Installing dependencies into src file"
       - npm i
       - npm run build
       - cd dist
       - zip -r lambda.zip .
-
+  post_build:
+    commands:
+      - echo "Updating lambda Function..."
+      - aws lambda update-function-code --function-name cah-api-card-resource --zip-file fileb://lambda.zip
+      - echo "Lambda successfully updated"
 artifacts:
   files:
     - "dist/lambda.zip"
